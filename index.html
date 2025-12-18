@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuralJobs - Unified Portal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS STYLES */
+        :root {
+            --primary: #2563eb;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--light); color: var(--dark); line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Navigation */
+        .navbar { background: var(--white); padding: 1rem 0; box-shadow: var(--shadow); sticky; top: 0; z-index: 100; }
+        .navbar .container { display: flex; justify-content: space-between; align-items: center; }
+        .nav-brand { font-size: 1.5rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .nav-menu { list-style: none; display: flex; gap: 20px; }
+        .nav-menu a { text-decoration: none; color: var(--dark); font-weight: 500; cursor: pointer; }
+
+        /* Hero Section */
+        .hero { background: linear-gradient(rgba(37, 99, 235, 0.8), rgba(37, 99, 235, 0.8)); color: white; padding: 60px 0; text-align: center; }
+        .search-box { background: white; padding: 15px; border-radius: 8px; display: flex; gap: 10px; max-width: 700px; margin: 20px auto; }
+        .search-box input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+
+        /* Job Cards */
+        .job-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 40px 0; }
+        .job-card { background: white; padding: 20px; border-radius: 8px; box-shadow: var(--shadow); border-left: 5px solid var(--primary); }
+        .job-card h3 { margin-bottom: 5px; }
+        .job-card .company { color: var(--secondary); font-weight: bold; }
+        .job-card .meta { font-size: 0.9rem; color: #666; margin: 10px 0; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 10% auto; padding: 30px; width: 90%; max-width: 500px; border-radius: 8px; position: relative; }
+        .close { position: absolute; right: 20px; top: 10px; font-size: 24px; cursor: pointer; }
+
+        /* Forms */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-block { width: 100%; }
+
+        /* Sections */
+        .section { display: none; padding: 40px 0; }
+        .section.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand"><i class="fas fa-briefcase"></i> RuralJobs</div>
+            <ul class="nav-menu">
+                <li><a onclick="showSection('home')">Home</a></li>
+                <li><a onclick="showSection('post')">Post a Job</a></li>
+                <li><a onclick="showSection('dashboard')">My Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="home" class="section active">
+        <section class="hero">
+            <div class="container">
+                <h1>Find Jobs in Your Village</h1>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search by job title or category...">
+                    <button class="btn btn-primary" onclick="searchJobs()">Search</button>
+                </div>
+            </div>
+        </section>
+        <div class="container">
+            <div id="jobList" class="job-grid">
+                </div>
+        </div>
+    </main>
+
+    <section id="post" class="section">
+        <div class="container">
+            <div class="modal-content" style="margin: 0 auto; box-shadow: var(--shadow);">
+                <h2>Post a New Job</h2>
+                <form id="postJobForm">
+                    <div class="form-group">
+                        <label>Job Title</label>
+                        <input type="text" id="jobTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="jobCategory">
+                            <option value="agriculture">Agriculture</option>
+                            <option value="handicrafts">Handicrafts</option>
+                            <option value="education">Education</option>
+                            <option value="healthcare">Healthcare</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Salary (₹)</label>
+                        <input type="number" id="jobSalary" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="jobDesc" rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Post Job Now</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section id="dashboard" class="section">
+        <div class="container">
+            <h2>Your Sent Applications</h2>
+            <div id="applicationList" class="job-grid">
+                </div>
+        </div>
+    </section>
+
+    <div id="applyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="applyTitle">Apply</h2>
+            <form id="applyForm">
+                <input type="hidden" id="applyJobId">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="app_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Experience (Years)</label>
+                    <input type="number" id="app_exp" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // JAVASCRIPT LOGIC
+        
+        // 1. Initial Data Setup
+        if (!localStorage.getItem('jobs')) {
+            const initialJobs = [
+                { id: 1, title: "Farm Supervisor", category: "agriculture", salary: "15000", desc: "Manage daily farm activities." },
+                { id: 2, title: "English Tutor", category: "education", salary: "12000", desc: "Teach primary school children." }
+            ];
+            localStorage.setItem('jobs', JSON.stringify(initialJobs));
+        }
+
+        // 2. Navigation Control
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'home') renderJobs();
+            if(id === 'dashboard') renderApplications();
+        }
+
+        // 3. Render Jobs to UI
+        function renderJobs(filter = '') {
+            const jobs = JSON.parse(localStorage.getItem('jobs'));
+            const container = document.getElementById('jobList');
+            container.innerHTML = '';
+
+            jobs.filter(j => j.title.toLowerCase().includes(filter.toLowerCase())).forEach(job => {
+                container.innerHTML += `
+                    <div class="job-card">
+                        <h3>${job.title}</h3>
+                        <p class="company"><i class="fas fa-tag"></i> ${job.category}</p>
+                        <p class="meta">₹ ${job.salary} / month</p>
+                        <p>${job.desc}</p>
+                        <button class="btn btn-primary btn-block" onclick="openApplyModal(${job.id}, '${job.title}')">Apply Now</button>
+                    </div>
+                `;
+            });
+        }
+
+        // 4. Search Functionality
+        function searchJobs() {
+            const term = document.getElementById('searchInput').value;
+            renderJobs(term);
+        }
+
+        // 5. Post Job Logic
+        document.getElementById('postJobForm').onsubmit = function(e) {
+            e.preventDefault();
+            const jobs = JSON.parse(localStorage.getItem('jobs'));
+            const newJob = {
+                id: Date.now(),
+                title: document.getElementById('jobTitle').value,
+                category: document.getElementById('jobCategory').value,
+                salary: document.getElementById('jobSalary').value,
+                desc: document.getElementById('jobDesc').value
+            };
+            jobs.push(newJob);
+            localStorage.setItem('jobs', JSON.stringify(jobs));
+            alert('Job Posted Successfully!');
+            this.reset();
+            showSection('home');
+        };
+
+        // 6. Application Logic
+        function openApplyModal(id, title) {
+            document.getElementById('applyModal').style.display = 'block';
+            document.getElementById('applyTitle').innerText = 'Apply for ' + title;
+            document.getElementById('applyJobId').value = id;
+        }
+
+        function closeModal() {
+            document.getElementById('applyModal').style.display = 'none';
+        }
+
+        document.getElementById('applyForm').onsubmit = function(e) {
+            e.preventDefault();
+            const apps = JSON.parse(localStorage.getItem('applications') || '[]');
+            const newApp = {
+                jobId: document.getElementById('applyJobId').value,
+                name: document.getElementById('app_name').value,
+                exp: document.getElementById('app_exp').value,
+                date: new Date().toLocaleDateString()
+            };
+            apps.push(newApp);
+            localStorage.setItem('applications', JSON.stringify(apps));
+            alert('Application Sent!');
+            closeModal();
+            showSection('dashboard');
+        };
+
+        // 7. Render Applications
+        function renderApplications() {
+            const apps = JSON.parse(localStorage.getItem('applications') || '[]');
+            const container = document.getElementById('applicationList');
+            container.innerHTML = apps.length ? '' : '<p>No applications sent yet.</p>';
+            
+            apps.forEach(app => {
+                container.innerHTML += `
+                    <div class="job-card" style="border-left-color: var(--secondary)">
+                        <h3>Application Submitted</h3>
+                        <p class="meta">Date: ${app.date}</p>
+                        <p><strong>Applicant:</strong> ${app.name}</p>
+                        <p><strong>Experience:</strong> ${app.exp} Years</p>
+                    </div>
+                `;
+            });
+        }
+
+        // Initial Load
+        renderJobs();
+    </script>
+</body>
+</html>
